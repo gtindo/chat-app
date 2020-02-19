@@ -1,0 +1,26 @@
+version: '3'
+services: 
+  ejabberd:
+    build: ./ejabberd.service
+    ports:
+      - "5222:5222" #xmpp client-server
+      - "5280:5280" #http admin
+      - "5269:5269" #xmpp server-server
+    environment: 
+      XMPP_DOMAIN: "ejabberd"
+      EJABBERD_ADMINS: "admin@ejabberd"
+      EJABBERD_USERS: "admin@ejabberd:admin"
+      EJABBERD_MOD_ADMIN_EXTRA: "true"
+      ERL_OPTIONS: "-noshell"
+  
+  gateway: 
+    build: ./gateway.service
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - ejabberd
+    environment: 
+      PORT: "3000"
+      NODE_TLS_REJECT_UNAUTHORIZED: '0' # because dev environment use self certificate, it should be removed on prod config
+    volumes:
+      - ./gateway.service/app:/home/app/app
