@@ -1,0 +1,3 @@
+./gateway.service/node_modules
+./gateway.service/.env
+.devcontainer

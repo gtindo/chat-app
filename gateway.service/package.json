@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha app/tests --exit"
   },
   "keywords": [
     "api",
@@ -16,11 +16,15 @@
   "dependencies": {
     "@xmpp/client": "0.11.0",
     "@xmpp/debug": "0.11.0",
-    "express": "4.17.1",
-    "socket.io": "2.3.0",
+    "axios": "0.19.2",
     "body-parser": "1.19.0",
+    "chai": "^4.2.0",
     "dotenv": "8.2.0",
-    "axios": "0.19.2"
+    "ejs": "^3.0.1",
+    "express": "4.17.1",
+    "mocha": "^7.0.1",
+    "socket.io": "2.3.0",
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
     "nodemon": "2.0.2"

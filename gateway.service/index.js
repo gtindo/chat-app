@@ -1,9 +1,15 @@
-const app = require('express')();
-const http = require('http').createServer(app);
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+const socketRouter = require('./app/routes/socket.routes');
+socketRouter(io);
+
+const httpRouter = require('./app/routes/http.routes');
+
 const bodyParser = require('body-parser');
-const path = require('path');
+const path = require('path')
 
 const config = require('./app/config');
 
@@ -13,14 +19,9 @@ app.use(express.static('app/static'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.use('/', (req, res) => {
-  return res.json({
-    "app_name": config.APP_NAME, 
-    "app_version": config.APP_VERSION
-  });
-});
+app.use("/", httpRouter);
 
-app.listen(config.APP_PORT, () => {
+http.listen(config.APP_PORT, () => {
     console.log(`${config.APP_NAME} started on port ${config.APP_PORT}`);
 });
 
