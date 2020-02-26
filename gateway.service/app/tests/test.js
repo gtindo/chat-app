@@ -10,10 +10,10 @@ const socket = require('socket.io-client')("http://localhost:3000");
 const waitMessage = async (channel, callback) => {
   return new Promise((resolve, reject) => {
     try {
-      socket.on(channel, (data) => {
-        callback(data);
+      socket.on(channel, async (data) => {
+        await callback(data);
         resolve(data);
-      })
+      });
     } catch (err) {
       reject(err)
     }
@@ -52,29 +52,39 @@ describe('Test user registration', () => {
   const email = "usertest@gmail.com";
   const password = "12345678"
 
-  it("Should create user with good username and password", async () => {
-    let user = { username, email, password }
-    socket.emit(route, JSON.stringify(user));
 
-    await waitMessage(route, (res) => {
-      let data = JSON.parse(res);
-      let expected = {
-        data: {
-          username,
-          email
-        },
-        error: {
-          code: "",
-          message: ""
-        },
-        status: true
-      }
-      assert.equal(data, expected);
-      
+  it("Should create user with good username and password", async () => {
+    return new Promise(async (resolve, reject) => {
+        let user = { username, email, password }
+        socket.emit(route, JSON.stringify(user));
+
+        await waitMessage(route, async (res) => {
+          let expected = JSON.stringify({
+            data: {
+              username,
+              email
+            },
+            error: {
+              code: "",
+              message: ""
+            },
+            status: true
+          });
+          
+          try{
+            assert.equal(res, expected);
+            socket.removeAllListeners([route]);
+            resolve("ok");
+          } catch (e) {
+            console.log(e);
+            reject(e)
+          }
+        });
     });
   });
 
 
+  /*
   it("Should not create user with bad email", async () => {
     let user = { username, password, email: "dsafsafd788.com" }
     socket.emit(route, JSON.stringify(user));
@@ -83,8 +93,9 @@ describe('Test user registration', () => {
       assert.equal(JSON.parse(res), expected);
     })
   });
+  */
 
-
+  /*
   it("Should not create user with bad password (less than 6 caraters)", async () => {
     let user = { username, email, password: "" }
     socket.emit(route, JSON.stringify(user));
@@ -93,17 +104,19 @@ describe('Test user registration', () => {
       assert.equal(JSON.parse(res), expected);
     });
   });
+  */
 
   it("Should not create existing user", async () => {
     let user = {
       username: "admin",
-      email: "",
+      email: "admin@server.com",
       password: "01234567889"
     }
     socket.emit(route, JSON.stringify(user));
+
     await waitMessage(route, async (res) => {
-      let expected = formatErrorMsg("ERR_REGISTER_03", "This username is already registred");
-      assert.equal(JSON.parse(res), expected);
+      let expected = formatErrorMsg("ERR_REGISTER_03", "This user is already registered");
+      assert.equal(res, JSON.stringify(expected));
     });
   });
 });

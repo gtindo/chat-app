@@ -11,7 +11,9 @@ module.exports = (io) => {
 
     // Create new user
     socket.on("register", async (data) => {
-      socket.emit("register", await userHandlers.register(data));
+      let res = await userHandlers.register(data);
+      console.log(res);
+      socket.emit("register", res);
     });
   });
 }

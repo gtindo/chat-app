@@ -30,7 +30,7 @@ exports.checkAccount = async function(username){
 /**
  * @param {String} username
  * @param {String} password
- * @returns {Object}
+ * @returns {Object} {data: "Success", status: 200}
  */
 exports.createAccount = async function(username, password){
   const uri = `${config.EJABBERD_API_URI}/register`;
@@ -41,7 +41,7 @@ exports.createAccount = async function(username, password){
   }
   let res = await axios.post(uri, data, {auth: AUTH})
   return {
-    data: res.data,
+    msg: res.data,
     status: res.status
   }
 }
