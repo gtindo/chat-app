@@ -15,7 +15,7 @@ validator.attributes.minLenght = function (instance, schema, options, ctx){
   }
 
   if(instance.length < schema.minLenght){
-    return `${instance} length is lower than ${schema.minLenght}`;
+    return `ERR_REGISTER_02: ${instance} length is lower than ${schema.minLenght}`;
   }
 }
 
@@ -33,7 +33,7 @@ validator.attributes.isEmail = function (instance, schema, options, ctx){
   let emailRe = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   if(schema.isEmail && !emailRe.test(instance)){
-    return `${instance} is invalid email address.`;
+    return `ERR_REGISTER_01: ${instance} is invalid email address.`;
   }
 
 }

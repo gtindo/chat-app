@@ -15,6 +15,12 @@ module.exports = (io) => {
       console.log(res);
       socket.emit("register", res);
     });
+
+    socket.on("login", async (data) => {
+      let res = await userHandlers.login(data);
+      console.log(res);
+      socket.emit("login", res);
+    })
   });
 }
 

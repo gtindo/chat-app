@@ -83,3 +83,22 @@ exports.checkPassword = async function(username, password){
   return false;
 }
 
+
+/**
+ * @param {String} username
+ * @returns {Object} {msg: "Success", status: 200}
+ */
+exports.deleteAccount = async function(username){
+  const uri = `${config.EJABBERD_API_URI}/unregister`;
+  const data = {
+    user: username,
+    host: config.XMPP_DOMAIN,
+  }
+  let res = await axios.post(uri, data, {auth: AUTH});
+  
+  return {
+    msg: res.data,
+    status: res.status
+  }
+}
+
