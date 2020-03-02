@@ -53,7 +53,7 @@ exports.register = async (data) => {
         let error = validation.errors[0].message.split(":");
         let code = error[0];
         let msg = error[1];
-        resolve(JSON.stringify(registerRes(username, email, code, msg, false)));
+        resolve(registerRes(username, email, code, msg, false));
         return;
       }
       
@@ -61,7 +61,7 @@ exports.register = async (data) => {
         // Check if user exists
         let account_status = await ejabberdApi.checkAccount(username);2
         if(account_status){
-          resolve(JSON.stringify(registerRes(username, email, "ERR_REGISTER_03", "This user is already registered", false)));
+          resolve(registerRes(username, email, "ERR_REGISTER_03", "This user is already registered", false));
           return 
         }
 
@@ -69,14 +69,14 @@ exports.register = async (data) => {
         
         if(status === 200){
           let response = registerRes(username, email, "", "", true);
-          resolve(JSON.stringify(response))
+          resolve(response)
         } else {
           reject("An error occured on xmpp server");
         }
       }
     } catch (err) {
       console.log(err)
-      reject(JSON.stringify(INTERNAL_SERVER_ERROR)); // Internal server error message
+      reject(INTERNAL_SERVER_ERROR); // Internal server error message
     }
   });
 }
@@ -96,12 +96,12 @@ exports.login = async (data) => {
       let validation = validator.validate({username, password}, schemas.login);
 
       if(!validation.valid){
-        resolve(JSON.stringify({data: {}, error: {code: "ERR_AUTH_03", message: "Validation error"}, status: false}));
+        resolve({data: {}, error: {code: "ERR_AUTH_03", message: "Validation error"}, status: false});
         return
       }
 
       if(username === "admin") {
-        resolve(JSON.stringify({data: {}, error: {code: "ERR_AUTH_02", message: "Invalid user"}, status: false}));
+        resolve({data: {}, error: {code: "ERR_AUTH_02", message: "Invalid user"}, status: false});
         return
       }
 
@@ -109,24 +109,23 @@ exports.login = async (data) => {
         let account_status = await ejabberdApi.checkAccount(username);
         if(account_status){
           let check_password = await ejabberdApi.checkPassword(username, password);
-          console.log("Check_password");
-          console.log(check_password);
+
           if(check_password){
-            let token = "A JWT TOKEN";
-            resolve(JSON.stringify({data: {username, token}, error: {code: "", message: ""}, status: true}));
+            let token = "A JWT TOKEN"; // replace with a real token
+            resolve({data: {username, token, password}, error: {code: "", message: ""}, status: true});
             return;
           }else{
-            resolve(JSON.stringify({data: {}, error: {code: "ERR_AUTH_01", message: "Bad username or password"}, status: false}));
+            resolve({data: {}, error: {code: "ERR_AUTH_01", message: "Bad username or password"}, status: false});
             return
           }
         }else {
-          resolve(JSON.stringify({data: {}, error: {code: "ERR_AUTH_01", message: "Bad username or password"}, status: false}));
+          resolve({data: {}, error: {code: "ERR_AUTH_01", message: "Bad username or password"}, status: false});
           return
         }
       }
     } catch (err) {
       console.log(err);
-      reject(JSON.stringify(INTERNAL_SERVER_ERROR)); 
+      reject(INTERNAL_SERVER_ERROR); 
     }
   });
 }

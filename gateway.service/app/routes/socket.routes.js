@@ -1,4 +1,5 @@
 const userHandlers = require('../handlers/user');
+const xmpp = require('../xmpp');
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
@@ -12,15 +13,23 @@ module.exports = (io) => {
     // Create new user
     socket.on("register", async (data) => {
       let res = await userHandlers.register(data);
-      console.log(res);
-      socket.emit("register", res);
+      socket.emit("register", JSON.stringify(res));
     });
 
     socket.on("login", async (data) => {
       let res = await userHandlers.login(data);
-      console.log(res);
-      socket.emit("login", res);
-    })
+      
+      if(res.status === true){
+        socket.join(res.data.username);
+        let clients = io.nsps["/"].adapter.rooms[res.data.username].length;
+        if(clients === 1) {
+          let xmppConn = xmpp.createXmppConnection(res.data.username, res.data.password); // create
+          xmpp.listenXmpp(xmppConn, io, res.data.username);
+        };
+      };
+    });
+
+    socket.emit("login", JSON.stringify(res));
   });
 }
 
